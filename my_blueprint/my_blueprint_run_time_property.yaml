@@ -1,0 +1,27 @@
+tosca_definitions_version: cloudify_dsl_1_3
+
+imports:
+  - my_yaml_files/sample.yaml
+
+inputs:
+  some_property:
+    description: the property
+    type: string
+    default: 'test prop'
+
+node_templates:
+
+  tutorial_script:
+    type: custom.type.sample
+    properties:
+      some_property: { get_input: some_property }
+      input_1: 103
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        start:
+          implementation: scripts/get_runtime_prop.py
+          executor: central_deployment_agent
+
+
+
+

@@ -1,0 +1,26 @@
+tosca_definitions_version: cloudify_dsl_1_3
+
+imports:
+  - my_yaml_files/sample.yaml
+
+inputs:
+  name:
+    description: the name of a person
+    type: string
+    default: 'John Doe'
+
+node_templates:
+
+  tutorial_script:
+    type: custom.type.sample
+    properties:
+      input_1: { get_input: name }
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        start:
+          implementation: scripts/start_server.sh
+          executor: central_deployment_agent
+
+
+
+

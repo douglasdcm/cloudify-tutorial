@@ -1,0 +1,72 @@
+# Imports - Like the imports in programming laguages
+# Plugins - python packages to be installed
+# Node Types - node_types are used for defining common properties and behaviors for node-templates. Class itself
+# Data Types - Group of properties - More like a tuple in database
+# Relationships - Link the node instances - Like a foreign key in database
+# Workflows - Group of Class Methods. Can define parameters
+# Inputs - Inject data. Class Setters
+# Node Templates - node instances. Objects. Has values in properties.
+# Outputs - print information about the deployment
+# Intrinsic Functions - get_input, get_properties (Class Getters)
+# Interfaces - Class methods
+# Capabilities - values exposed to be used by other deployments. Class getters
+
+tosca_definitions_version: cloudify_dsl_1_3
+
+imports:
+  - https://getcloudify.org/spec/cloudify/5.0.5/types.yaml
+
+node_types:
+  dog:
+    derived_from: cloudify.nodes.Root
+    properties:
+      name:
+        type: list
+    interfaces:
+      dog_interface:
+        bark:
+          implementation: scripts/bark.py
+          executor: central_deployment_agent
+
+  owner:
+    properties:
+      name:
+        type: string
+      dogs:
+        type: list
+    interfaces:
+      owner_interface:
+        adopt:
+          implementation: scripts/adopt.py
+          executor: central_deployment_agent
+        donate:
+          implementation: scripts/donate.py
+          executor: central_deployment_agent
+        call_dog:
+          implementation: scripts/call_dog.py
+          executor: central_deployment_agent
+
+inputs:
+  dog_names:
+    type: list
+  owner_name:
+    type: string
+
+node_templates:
+  the_dog:
+    type: dog
+    properties:
+      name: { get_input: dog_names}
+
+  the_owner:
+    type: owner
+    properties:
+        name: { get_input: owner_name }
+        dogs: { get_property: [the_dog, name] }
+    relationships:
+      - type: cloudify.relationships.connected_to
+        target: the_dog
+
+outputs:
+  owner_dogs:
+    value: { get_property: [the_owner, dogs] }

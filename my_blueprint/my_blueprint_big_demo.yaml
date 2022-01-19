@@ -1,0 +1,68 @@
+tosca_definitions_version: cloudify_dsl_1_3
+
+imports:
+  - my_yaml_files/employee.yaml
+  - my_yaml_files/sample.yaml
+  - my_yaml_files/owner.yaml
+  - my_yaml_files/relationships.yaml
+
+plugins:
+  my_plugin:
+    executor: central_deployment_agent
+    source: my_plugin_folder
+
+inputs:
+  name:
+    description: the name of a person
+    type: string
+    default: 'John Doe'
+  age:
+    description: the age of a person
+    type: integer
+    default: 35
+  emp_instances:
+    description: number of employees
+    type: integer
+    default: 1
+  input_1:
+    description: used by sample
+    type: integer
+    default: 9000
+
+node_templates:
+  employee:
+    type: custom.type.employee
+    properties:
+       personal_info:
+         name: { get_input: name }
+         age: { get_input: age }
+    capabilities:
+      scalable:
+        properties:
+          default_instances: { get_input: emp_instances }
+    relationships:
+      - type: custom.relationship.contract
+        target: 'owner'
+
+  owner:
+    type: custom.type.owner
+    properties:
+      personal_info:
+        name: 'any'
+        age: 36
+        address: 'any local'
+
+  tutorial_script:
+    type: custom.type.sample
+    properties:
+      input_1: { get_input: input_1 }
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        start:
+          implementation: my_plugin.tasks.my_task
+          executor: central_deployment_agent
+
+
+
+
+
