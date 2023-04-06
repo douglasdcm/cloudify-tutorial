@@ -1,0 +1,32 @@
+tosca_definitions_version: cloudify_dsl_1_3
+
+plugins:
+  mock_plugin:
+    executor: central_deployment_agent
+    install: false
+
+node_types:
+  my_node_type:
+    properties:
+      some_property:
+        type: string
+        default: "some property value"
+    interfaces:
+      retry:
+        task_1:
+          implementation: mock_plugin.playground.test_workflow_retry.src.tasks.task_1
+          inputs:
+            arg:
+              type: integer
+              default: 0
+        task_2:
+          implementation: mock_plugin.playground.test_workflow_retry.src.tasks.task_2
+
+node_templates:
+  my_node_instance:
+    type: my_node_type
+    properties:
+      some_property: "some_property"
+
+workflows:
+  generic_workflow: mock_plugin.playground.test_workflow_retry.src.workflows.retry

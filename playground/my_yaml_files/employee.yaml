@@ -1,0 +1,13 @@
+tosca_definitions_version: cloudify_dsl_1_3
+
+imports:
+  - https://getcloudify.org/spec/cloudify/5.0.5/types.yaml
+  - data_types.yaml
+
+node_types:
+  custom.type.employee:
+    derived_from: cloudify.nodes.Root
+    properties:
+      personal_info:
+        type: custom.data.person
+    

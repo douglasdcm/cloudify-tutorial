@@ -1,0 +1,16 @@
+tosca_definitions_version: cloudify_dsl_1_3
+
+data_types:
+  custom.data.person:
+    description: a person
+    properties:
+      name:
+        type: string
+        default: ''
+      age:
+        type: integer
+        default: 0
+      address:
+        type: string
+        default: ''
+        required: false
